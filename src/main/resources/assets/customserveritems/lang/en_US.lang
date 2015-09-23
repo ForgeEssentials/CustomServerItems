@@ -1,0 +1,9 @@
+item.custom_item.name=Custom Item
+
+commands.notEnoughArguments=Not enough arguments
+
+commands.customservercommand.usage=/customServerItem icon <id>: Changes the icon of the current item
+commands.customservercommand.invalidsubcmd=Invalid sub command
+commands.customservercommand.noConsole=This command cannot be used from console
+commands.customservercommand.itemNeeded=You need to equip a custom item first
+commands.customservercommand.iconSet=Set custom item texture to %s

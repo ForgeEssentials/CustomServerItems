@@ -8,8 +8,12 @@ import java.io.IOException;
 
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
-public class PacketTexture implements IMessage
+public class PacketTexture implements IMessage, IMessageHandler<PacketTexture, IMessage>
 {
 
     public String id;
@@ -45,6 +49,14 @@ public class PacketTexture implements IMessage
         ByteBufUtils.writeUTF8String(buf, id);
         buf.writeInt(data.length);
         buf.writeBytes(data);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public IMessage onMessage(PacketTexture message, MessageContext ctx)
+    {
+        CustomServerItems.TEXTURE_REGISTRY.loadTexture(message.id, message.data);
+        return null;
     }
 
 }

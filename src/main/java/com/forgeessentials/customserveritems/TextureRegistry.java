@@ -13,43 +13,67 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-@SideOnly(value = Side.CLIENT)
-public class TextureRegistry implements IMessageHandler<PacketTexture, IMessage>
+@SideOnly(Side.CLIENT)
+public class TextureRegistry
 {
 
     public static final Map<String, DynamicTexture> textures = new HashMap<>();
 
     public static final Map<String, ResourceLocation> texturesLocations = new HashMap<>();
 
-    @Override
-    public IMessage onMessage(PacketTexture message, MessageContext ctx)
+    public static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(CustomServerItems.MODID, "textures/items/custom_item.png");
+
+    public synchronized static void loadTexture(String id, byte[] data)
     {
         try
         {
-            try (ByteArrayInputStream is = new ByteArrayInputStream(message.data))
+            try (ByteArrayInputStream is = new ByteArrayInputStream(data))
             {
                 BufferedImage image = ImageIO.read(is);
                 DynamicTexture texture = new DynamicTexture(image);
-                ResourceLocation textureLocation = Minecraft.getMinecraft().renderEngine.getDynamicTextureLocation("csi_" + message.id, texture);
-                textures.put(message.id, texture);
-                texturesLocations.put(message.id, textureLocation);
+                ResourceLocation textureLocation = Minecraft.getMinecraft().renderEngine.getDynamicTextureLocation("csi_" + id, texture);
+                textures.put(id, texture);
+                texturesLocations.put(id, textureLocation);
             }
         }
         catch (IOException e)
         {
-            ChatComponentText cmsg = new ChatComponentText(String.format("Could not load custom server icon %s: %s", message.id, e.getMessage()));
+            ChatComponentText cmsg = new ChatComponentText(String.format("Could not load custom server icon %s: %s", id, e.getMessage()));
             cmsg.getChatStyle().setColor(EnumChatFormatting.RED);
-            FMLClientHandler.instance().getClientPlayerEntity().addChatMessage(cmsg);
+            Minecraft.getMinecraft().thePlayer.addChatMessage(cmsg);
             e.printStackTrace();
         }
-        return null;
+    }
+
+    public synchronized static void clear()
+    {
+        for (DynamicTexture texture : textures.values())
+            texture.deleteGlTexture();
+        textures.clear();
+        texturesLocations.clear();
+    }
+
+    public static ResourceLocation getTexture(String id)
+    {
+        ResourceLocation texture = texturesLocations.get(id);
+        if (texture == null)
+        {
+            texturesLocations.put(id, DEFAULT_TEXTURE);
+            try
+            {
+                CustomServerItems.CHANNEL.sendToServer(new PacketRequestTexture(id));
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            return DEFAULT_TEXTURE;
+        }
+        else
+            return texture;
     }
 
 }
