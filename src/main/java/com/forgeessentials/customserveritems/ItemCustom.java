@@ -2,7 +2,9 @@ package com.forgeessentials.customserveritems;
 
 import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
@@ -10,6 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.World;
 
 import com.google.common.collect.Multimap;
 
@@ -45,6 +48,37 @@ public class ItemCustom extends Item
         if (!MinecraftServer.getServer().getConfigurationManager().func_152596_g(player.getGameProfile()))
             return;
         info.add("texture = " + tag.getString(CustomServerItems.TAG_TEXTURE));
+        info.add("durability = " + tag.getString(CustomServerItems.TAG_DURABILITY));
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack stack)
+    {
+        NBTTagCompound tag = stack.getTagCompound();
+        if (tag != null && tag.hasKey(CustomServerItems.TAG_DURABILITY))
+            return tag.getInteger(CustomServerItems.TAG_DURABILITY);
+        return super.getMaxDamage(stack);
+    }
+
+    @Override
+    public boolean isDamageable()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean hitEntity(ItemStack stack, EntityLivingBase entity1, EntityLivingBase entity2)
+    {
+        stack.damageItem(1, entity2);
+        return true;
+    }
+
+    @Override
+    public boolean onBlockDestroyed(ItemStack stack, World world, Block block, int x, int y, int z, EntityLivingBase entity)
+    {
+        if (block.getBlockHardness(world, x, y, z) != 0.0D)
+            stack.damageItem(1, entity);
+        return true;
     }
 
     @Override
@@ -55,7 +89,7 @@ public class ItemCustom extends Item
         NBTTagCompound tag = stack.getTagCompound();
         if (tag != null && tag.hasKey(CustomServerItems.TAG_DAMAGE))
         {
-            double damage = tag.getInteger(CustomServerItems.TAG_DAMAGE);
+            double damage = tag.getDouble(CustomServerItems.TAG_DAMAGE);
             result.put(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName(), new AttributeModifier(field_111210_e, "Weapon modifier", damage, 0));
         }
         return result;

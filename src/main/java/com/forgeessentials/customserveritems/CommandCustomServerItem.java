@@ -54,6 +54,9 @@ public class CommandCustomServerItem extends CommandBase
         case "damage":
             parseDamage(player, args, stack);
             break;
+        case "durability":
+            parseDurability(player, args, stack);
+            break;
         default:
             throw new WrongUsageException("commands.customservercommand.invalidsubcmd");
         }
@@ -89,13 +92,26 @@ public class CommandCustomServerItem extends CommandBase
     {
         if (args.isEmpty())
             throw new WrongUsageException("commands.notEnoughArguments");
-        int damage = parseInt(player, args.remove());
+        double damage = parseDouble(player, args.remove());
 
         NBTTagCompound tag = stack.getTagCompound();
-        tag.setInteger(CustomServerItems.TAG_DAMAGE, damage);
+        tag.setDouble(CustomServerItems.TAG_DAMAGE, damage);
         stack.setTagCompound(tag);
 
         func_152373_a(player, this, "commands.customservercommand.damageSet", damage);
+    }
+
+    public void parseDurability(EntityPlayer player, LinkedList<String> args, ItemStack stack)
+    {
+        if (args.isEmpty())
+            throw new WrongUsageException("commands.notEnoughArguments");
+        int durability = parseInt(player, args.remove());
+
+        NBTTagCompound tag = stack.getTagCompound();
+        tag.setInteger(CustomServerItems.TAG_DURABILITY, durability);
+        stack.setTagCompound(tag);
+
+        func_152373_a(player, this, "commands.customservercommand.durabilitySet", durability);
     }
 
 }
