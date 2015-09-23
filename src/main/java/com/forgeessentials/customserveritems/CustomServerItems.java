@@ -1,7 +1,10 @@
 package com.forgeessentials.customserveritems;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraftforge.client.MinecraftForgeClient;
 import cpw.mods.fml.common.Mod;
@@ -42,6 +45,14 @@ public class CustomServerItems implements IMessageHandler<PacketRequestTexture, 
 
     @SideOnly(Side.CLIENT)
     public static final TextureRegistry TEXTURE_REGISTRY = new TextureRegistry();
+
+    public static final FilenameFilter PNG_FILTER = new FilenameFilter() {
+        @Override
+        public boolean accept(File dir, String name)
+        {
+            return name.toLowerCase().endsWith(".png");
+        }
+    };
 
     @SideOnly(Side.CLIENT)
     public static CustomItemRenderer itemRenderer;
@@ -89,6 +100,14 @@ public class CustomServerItems implements IMessageHandler<PacketRequestTexture, 
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static List<String> getTextureNames()
+    {
+        List<String> textures = new ArrayList<String>();
+        for (String name : TEXTURE_DIRECTORY.list(PNG_FILTER))
+            textures.add(name.substring(0, name.length() - 4));
+        return textures;
     }
 
 }

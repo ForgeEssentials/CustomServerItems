@@ -6,6 +6,7 @@ commands.customservercommand.usage=/customServerItem icon|name|damage <value>: C
 commands.customservercommand.invalidsubcmd=Invalid sub command
 commands.customservercommand.noConsole=This command cannot be used from console
 commands.customservercommand.itemNeeded=You need to equip a custom item first
+commands.customservercommand.textures=Available textures: %s
 commands.customservercommand.iconSet=Set custom item texture to %s
 commands.customservercommand.nameSet=Set custom item name to %s
 commands.customservercommand.damageSet=Set custom item damage to +%s

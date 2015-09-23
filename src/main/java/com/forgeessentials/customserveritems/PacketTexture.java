@@ -55,7 +55,7 @@ public class PacketTexture implements IMessage, IMessageHandler<PacketTexture, I
     @SideOnly(Side.CLIENT)
     public IMessage onMessage(PacketTexture message, MessageContext ctx)
     {
-        CustomServerItems.TEXTURE_REGISTRY.loadTexture(message.id, message.data);
+        TextureRegistry.loadTexture(message.id, message.data);
         return null;
     }
 

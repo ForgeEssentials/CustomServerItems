@@ -2,6 +2,7 @@ package com.forgeessentials.customserveritems;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
@@ -45,8 +46,11 @@ public class CommandCustomServerItem extends CommandBase
         String subArg = args.remove().toLowerCase();
         switch (subArg)
         {
-        case "icon":
-            parseIcon(player, args, stack);
+        case "texturelist":
+            func_152373_a(player, this, "commands.customservercommand.textures", StringUtils.join(CustomServerItems.getTextureNames(), ", "));
+            break;
+        case "texture":
+            parseTexture(player, args, stack);
             break;
         case "name":
             parseName(player, args, stack);
@@ -62,7 +66,24 @@ public class CommandCustomServerItem extends CommandBase
         }
     }
 
-    public void parseIcon(EntityPlayer player, LinkedList<String> args, ItemStack stack)
+    @Override
+    @SuppressWarnings("rawtypes")
+    public List addTabCompletionOptions(ICommandSender sender, String[] args)
+    {
+        if (args.length == 1)
+            return getListOfStringsMatchingLastWord(args, "texture", "name", "damage", "durability", "texturelist");
+        if (args.length == 2)
+        {
+            switch (args[0].toLowerCase())
+            {
+            case "texture":
+                return getListOfStringsFromIterableMatchingLastWord(args, CustomServerItems.getTextureNames());
+            }
+        }
+        return null;
+    }
+
+    public void parseTexture(EntityPlayer player, LinkedList<String> args, ItemStack stack)
     {
         if (args.isEmpty())
             throw new WrongUsageException("commands.notEnoughArguments");
