@@ -37,6 +37,8 @@ public class CustomServerItems implements IMessageHandler<PacketRequestTexture, 
 
     public static final String TAG_DURABILITY = "csi_durability";
 
+    public static final String TAG_TOOLTIP = "csi_tooltip";
+
     public static final ItemCustom ITEM = new ItemCustom();
 
     public static final SimpleNetworkWrapper CHANNEL = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);

@@ -45,6 +45,8 @@ public class ItemCustom extends Item
         NBTTagCompound tag = stack.getTagCompound();
         if (tag == null)
             return;
+        if (tag.hasKey(CustomServerItems.TAG_TOOLTIP))
+            info.add(tag.getString(CustomServerItems.TAG_TOOLTIP));
         if (!MinecraftServer.getServer().getConfigurationManager().func_152596_g(player.getGameProfile()))
             return;
         info.add("texture = " + tag.getString(CustomServerItems.TAG_TEXTURE));

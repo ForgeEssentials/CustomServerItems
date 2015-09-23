@@ -16,6 +16,8 @@ import org.apache.commons.lang3.StringUtils;
 public class CommandCustomServerItem extends CommandBase
 {
 
+    public static final String[] subCommands = new String[] { "texture", "name", "tooltip", "damage", "durability", "texturelist" };
+
     @Override
     public String getCommandName()
     {
@@ -35,13 +37,17 @@ public class CommandCustomServerItem extends CommandBase
             throw new WrongUsageException("commands.customservercommand.noConsole");
         EntityPlayer player = (EntityPlayer) sender;
 
+        LinkedList<String> args = new LinkedList<String>(Arrays.asList(argArray));
+        if (args.isEmpty())
+        {
+            func_152373_a(player, this, getCommandUsage(sender));
+            func_152373_a(player, this, "commands.customservercommand.help2", StringUtils.join(subCommands, ", "));
+            return;
+        }
+
         ItemStack stack = player.getCurrentEquippedItem();
         if (stack == null || stack.getItem() != CustomServerItems.ITEM)
             throw new WrongUsageException("commands.customservercommand.itemNeeded");
-
-        LinkedList<String> args = new LinkedList<String>(Arrays.asList(argArray));
-        if (args.isEmpty())
-            throw new WrongUsageException("commands.notEnoughArguments");
 
         String subArg = args.remove().toLowerCase();
         switch (subArg)
@@ -54,6 +60,9 @@ public class CommandCustomServerItem extends CommandBase
             break;
         case "name":
             parseName(player, args, stack);
+            break;
+        case "tooltip":
+            parseTooltip(player, args, stack);
             break;
         case "damage":
             parseDamage(player, args, stack);
@@ -71,7 +80,7 @@ public class CommandCustomServerItem extends CommandBase
     public List addTabCompletionOptions(ICommandSender sender, String[] args)
     {
         if (args.length == 1)
-            return getListOfStringsMatchingLastWord(args, "texture", "name", "damage", "durability", "texturelist");
+            return getListOfStringsMatchingLastWord(args, subCommands);
         if (args.length == 2)
         {
             switch (args[0].toLowerCase())
@@ -89,10 +98,8 @@ public class CommandCustomServerItem extends CommandBase
             throw new WrongUsageException("commands.notEnoughArguments");
         String id = args.remove();
 
-        NBTTagCompound tag = stack.getTagCompound();
+        NBTTagCompound tag = getOrCreateTag(stack);
         tag.setString(CustomServerItems.TAG_TEXTURE, id);
-        stack.setTagCompound(tag);
-
         func_152373_a(player, this, "commands.customservercommand.iconSet", id);
     }
 
@@ -102,11 +109,20 @@ public class CommandCustomServerItem extends CommandBase
             throw new WrongUsageException("commands.notEnoughArguments");
         String name = StringUtils.join(args, " ");
 
-        NBTTagCompound tag = stack.getTagCompound();
+        NBTTagCompound tag = getOrCreateTag(stack);
         tag.setString(CustomServerItems.TAG_NAME, name);
-        stack.setTagCompound(tag);
-
         func_152373_a(player, this, "commands.customservercommand.nameSet", name);
+    }
+
+    public void parseTooltip(EntityPlayer player, LinkedList<String> args, ItemStack stack)
+    {
+        if (args.isEmpty())
+            throw new WrongUsageException("commands.notEnoughArguments");
+        String name = StringUtils.join(args, " ");
+
+        NBTTagCompound tag = getOrCreateTag(stack);
+        tag.setString(CustomServerItems.TAG_TOOLTIP, name);
+        func_152373_a(player, this, "commands.customservercommand.tooltipSet", name);
     }
 
     public void parseDamage(EntityPlayer player, LinkedList<String> args, ItemStack stack)
@@ -115,10 +131,8 @@ public class CommandCustomServerItem extends CommandBase
             throw new WrongUsageException("commands.notEnoughArguments");
         double damage = parseDouble(player, args.remove());
 
-        NBTTagCompound tag = stack.getTagCompound();
+        NBTTagCompound tag = getOrCreateTag(stack);
         tag.setDouble(CustomServerItems.TAG_DAMAGE, damage);
-        stack.setTagCompound(tag);
-
         func_152373_a(player, this, "commands.customservercommand.damageSet", damage);
     }
 
@@ -128,11 +142,20 @@ public class CommandCustomServerItem extends CommandBase
             throw new WrongUsageException("commands.notEnoughArguments");
         int durability = parseInt(player, args.remove());
 
-        NBTTagCompound tag = stack.getTagCompound();
+        NBTTagCompound tag = getOrCreateTag(stack);
         tag.setInteger(CustomServerItems.TAG_DURABILITY, durability);
-        stack.setTagCompound(tag);
-
         func_152373_a(player, this, "commands.customservercommand.durabilitySet", durability);
+    }
+
+    public static NBTTagCompound getOrCreateTag(ItemStack stack)
+    {
+        NBTTagCompound tag = stack.getTagCompound();
+        if (tag == null)
+        {
+            tag = new NBTTagCompound();
+            stack.setTagCompound(tag);
+        }
+        return tag;
     }
 
 }
