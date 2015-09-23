@@ -7,10 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraftforge.client.MinecraftForgeClient;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -46,7 +48,7 @@ public class CustomServerItems implements IMessageHandler<PacketRequestTexture, 
     public static final File TEXTURE_DIRECTORY = new File("config/CustomServerItems");
 
     @SideOnly(Side.CLIENT)
-    public static final TextureRegistry TEXTURE_REGISTRY = new TextureRegistry();
+    public static TextureRegistry TEXTURE_REGISTRY;
 
     public static final FilenameFilter PNG_FILTER = new FilenameFilter() {
         @Override
@@ -71,8 +73,11 @@ public class CustomServerItems implements IMessageHandler<PacketRequestTexture, 
 
         if (event.getSide() == Side.CLIENT)
         {
+            TEXTURE_REGISTRY = new TextureRegistry();
             MinecraftForgeClient.registerItemRenderer(ITEM, new CustomItemRenderer());
         }
+
+        FMLCommonHandler.instance().bus().register(this);
     }
 
     @EventHandler
@@ -81,7 +86,7 @@ public class CustomServerItems implements IMessageHandler<PacketRequestTexture, 
         event.registerServerCommand(new CommandCustomServerItem());
     }
 
-    @EventHandler
+    @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public void clientDisconnectEvent(ClientDisconnectionFromServerEvent event)
     {

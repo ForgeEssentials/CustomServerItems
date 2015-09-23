@@ -11,7 +11,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 
 import com.google.common.collect.Multimap;
@@ -43,14 +42,12 @@ public class ItemCustom extends Item
     public void addInformation(ItemStack stack, EntityPlayer player, List info, boolean shiftPressed)
     {
         NBTTagCompound tag = stack.getTagCompound();
-        if (tag == null)
-            return;
-        if (tag.hasKey(CustomServerItems.TAG_TOOLTIP))
+        if (tag != null && tag.hasKey(CustomServerItems.TAG_TOOLTIP))
             info.add(tag.getString(CustomServerItems.TAG_TOOLTIP));
-        if (!MinecraftServer.getServer().getConfigurationManager().func_152596_g(player.getGameProfile()))
-            return;
-        info.add("texture = " + tag.getString(CustomServerItems.TAG_TEXTURE));
-        info.add("durability = " + tag.getString(CustomServerItems.TAG_DURABILITY));
+        // if (!MinecraftServer.getServer().getConfigurationManager().func_152596_g(player.getGameProfile()))
+        // return;
+        // info.add("texture = " + tag.getString(CustomServerItems.TAG_TEXTURE));
+        // info.add("durability = " + tag.getString(CustomServerItems.TAG_DURABILITY));
     }
 
     @Override
