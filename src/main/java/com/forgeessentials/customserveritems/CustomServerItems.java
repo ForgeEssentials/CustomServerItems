@@ -28,11 +28,13 @@ public class CustomServerItems implements IMessageHandler<PacketRequestTexture, 
 
     public static final String TAG_TEXTURE = "csi_texture";
 
+    public static final String TAG_NAME = "csi_name";
+
     public static final ItemCustom ITEM = new ItemCustom();
 
     public static final SimpleNetworkWrapper CHANNEL = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
 
-    public static final File TEXTURE_DIRECTORY = new File("mods/CustomServerItems");
+    public static final File TEXTURE_DIRECTORY = new File("config/CustomServerItems");
 
     @SideOnly(Side.CLIENT)
     public static final TextureRegistry TEXTURE_REGISTRY = new TextureRegistry();

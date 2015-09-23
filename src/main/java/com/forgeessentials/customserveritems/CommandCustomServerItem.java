@@ -10,6 +10,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class CommandCustomServerItem extends CommandBase
 {
 
@@ -32,6 +34,10 @@ public class CommandCustomServerItem extends CommandBase
             throw new WrongUsageException("commands.customservercommand.noConsole");
         EntityPlayer player = (EntityPlayer) sender;
 
+        ItemStack stack = player.getCurrentEquippedItem();
+        if (stack == null || stack.getItem() != CustomServerItems.ITEM)
+            throw new WrongUsageException("commands.customservercommand.itemNeeded");
+
         LinkedList<String> args = new LinkedList<String>(Arrays.asList(argArray));
         if (args.isEmpty())
             throw new WrongUsageException("commands.notEnoughArguments");
@@ -40,19 +46,18 @@ public class CommandCustomServerItem extends CommandBase
         switch (subArg)
         {
         case "icon":
-            parseIcon(player, args);
+            parseIcon(player, args, stack);
+            break;
+        case "name":
+            parseName(player, args, stack);
             break;
         default:
             throw new WrongUsageException("commands.customservercommand.invalidsubcmd");
         }
     }
 
-    public void parseIcon(EntityPlayer player, LinkedList<String> args)
+    public void parseIcon(EntityPlayer player, LinkedList<String> args, ItemStack stack)
     {
-        ItemStack stack = player.getCurrentEquippedItem();
-        if (stack == null || stack.getItem() != CustomServerItems.ITEM)
-            throw new WrongUsageException("commands.customservercommand.itemNeeded");
-
         if (args.isEmpty())
             throw new WrongUsageException("commands.notEnoughArguments");
         String id = args.remove();
@@ -63,4 +68,18 @@ public class CommandCustomServerItem extends CommandBase
 
         func_152373_a(player, this, "commands.customservercommand.iconSet", id);
     }
+
+    public void parseName(EntityPlayer player, LinkedList<String> args, ItemStack stack)
+    {
+        if (args.isEmpty())
+            throw new WrongUsageException("commands.notEnoughArguments");
+        String name = StringUtils.join(args, " ");
+
+        NBTTagCompound tag = stack.getTagCompound();
+        tag.setString(CustomServerItems.TAG_NAME, name);
+        stack.setTagCompound(tag);
+
+        func_152373_a(player, this, "commands.customservercommand.nameSet", name);
+    }
+
 }
