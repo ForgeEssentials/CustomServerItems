@@ -3,11 +3,16 @@ package com.forgeessentials.customserveritems;
 import java.util.List;
 
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
+
+import com.google.common.collect.Multimap;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -40,6 +45,20 @@ public class ItemCustom extends Item
         if (!MinecraftServer.getServer().getConfigurationManager().func_152596_g(player.getGameProfile()))
             return;
         info.add("texture = " + tag.getString(CustomServerItems.TAG_TEXTURE));
+    }
+
+    @Override
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public Multimap getAttributeModifiers(ItemStack stack)
+    {
+        Multimap result = super.getAttributeModifiers(stack);
+        NBTTagCompound tag = stack.getTagCompound();
+        if (tag != null && tag.hasKey(CustomServerItems.TAG_DAMAGE))
+        {
+            double damage = tag.getInteger(CustomServerItems.TAG_DAMAGE);
+            result.put(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName(), new AttributeModifier(field_111210_e, "Weapon modifier", damage, 0));
+        }
+        return result;
     }
 
 }

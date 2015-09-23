@@ -51,6 +51,9 @@ public class CommandCustomServerItem extends CommandBase
         case "name":
             parseName(player, args, stack);
             break;
+        case "damage":
+            parseDamage(player, args, stack);
+            break;
         default:
             throw new WrongUsageException("commands.customservercommand.invalidsubcmd");
         }
@@ -80,6 +83,19 @@ public class CommandCustomServerItem extends CommandBase
         stack.setTagCompound(tag);
 
         func_152373_a(player, this, "commands.customservercommand.nameSet", name);
+    }
+
+    public void parseDamage(EntityPlayer player, LinkedList<String> args, ItemStack stack)
+    {
+        if (args.isEmpty())
+            throw new WrongUsageException("commands.notEnoughArguments");
+        int damage = parseInt(player, args.remove());
+
+        NBTTagCompound tag = stack.getTagCompound();
+        tag.setInteger(CustomServerItems.TAG_DAMAGE, damage);
+        stack.setTagCompound(tag);
+
+        func_152373_a(player, this, "commands.customservercommand.damageSet", damage);
     }
 
 }
