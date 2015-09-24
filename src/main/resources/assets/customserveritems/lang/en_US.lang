@@ -13,3 +13,4 @@ commands.customservercommand.nameSet=Set custom item name to "%s"
 commands.customservercommand.damageSet=Set custom item damage to +%s
 commands.customservercommand.tooltipSet=Set custom item tooltip to "%s"
 commands.customservercommand.durabilitySet=Set custom item durability to %s
+commands.customservercommand.metaSet=Set custom item meta to %s

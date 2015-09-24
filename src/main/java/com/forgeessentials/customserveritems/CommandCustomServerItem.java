@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 public class CommandCustomServerItem extends CommandBase
 {
 
-    public static final String[] subCommands = new String[] { "texture", "name", "tooltip", "damage", "durability", "texturelist" };
+    public static final String[] subCommands = new String[] { "texture", "name", "tooltip", "damage", "durability", "meta", "texturelist" };
 
     @Override
     public String getCommandName()
@@ -69,6 +69,9 @@ public class CommandCustomServerItem extends CommandBase
             break;
         case "durability":
             parseDurability(player, args, stack);
+            break;
+        case "meta":
+            parseMeta(player, args, stack);
             break;
         default:
             throw new WrongUsageException("commands.customservercommand.invalidsubcmd");
@@ -145,6 +148,16 @@ public class CommandCustomServerItem extends CommandBase
         NBTTagCompound tag = getOrCreateTag(stack);
         tag.setInteger(CustomServerItems.TAG_DURABILITY, durability);
         func_152373_a(player, this, "commands.customservercommand.durabilitySet", durability);
+    }
+
+    public void parseMeta(EntityPlayer player, LinkedList<String> args, ItemStack stack)
+    {
+        if (args.isEmpty())
+            throw new WrongUsageException("commands.notEnoughArguments");
+        int meta = parseIntWithMin(player, args.remove(), 0);
+
+        stack.setItemDamage(meta);
+        func_152373_a(player, this, "commands.customservercommand.metaSet", meta);
     }
 
     public static NBTTagCompound getOrCreateTag(ItemStack stack)
