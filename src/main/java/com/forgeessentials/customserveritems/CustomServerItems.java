@@ -13,6 +13,7 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -81,7 +82,7 @@ public class CustomServerItems implements IMessageHandler<PacketRequestTexture, 
     }
 
     @EventHandler
-    public void clientDisconnectEvent(FMLServerStartingEvent event)
+    public void serverStartingEvent(FMLServerStartingEvent event)
     {
         event.registerServerCommand(new CommandCustomServerItem());
     }
@@ -91,6 +92,14 @@ public class CustomServerItems implements IMessageHandler<PacketRequestTexture, 
     public void clientDisconnectEvent(ClientDisconnectionFromServerEvent event)
     {
         TextureRegistry.clear();
+        TextureRegistry.enabled = false;
+    }
+
+    @SubscribeEvent
+    @SideOnly(Side.CLIENT)
+    public void clientConnectedEvent(ClientConnectedToServerEvent event)
+    {
+        TextureRegistry.enabled = true;
     }
 
     @Override

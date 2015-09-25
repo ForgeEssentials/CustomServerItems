@@ -26,6 +26,8 @@ public class TextureRegistry
 
     public static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(CustomServerItems.MODID, "textures/items/custom_item.png");
 
+    protected static boolean enabled = false;
+
     public synchronized static void loadTexture(String id, byte[] data)
     {
         try
@@ -58,6 +60,8 @@ public class TextureRegistry
 
     public static ResourceLocation getTexture(String id)
     {
+        if (!enabled)
+            return DEFAULT_TEXTURE;
         ResourceLocation texture = texturesLocations.get(id);
         if (texture == null)
         {
