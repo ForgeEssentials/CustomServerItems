@@ -3,7 +3,9 @@ package com.forgeessentials.customserveritems;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
@@ -24,22 +26,19 @@ public class TextureRegistry
 
     public static final Map<String, ResourceLocation> texturesLocations = new HashMap<>();
 
+    protected static final List<DynamicTexture> releaseList = new ArrayList<>();
+
     public static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(CustomServerItems.MODID, "textures/items/custom_item.png");
 
     protected static boolean enabled = false;
 
-    public synchronized static void loadTexture(String id, byte[] data)
+    public static void loadTexture(String id, byte[] data)
     {
-        try
+        try (ByteArrayInputStream is = new ByteArrayInputStream(data))
         {
-            try (ByteArrayInputStream is = new ByteArrayInputStream(data))
-            {
-                BufferedImage image = ImageIO.read(is);
-                DynamicTexture texture = new DynamicTexture(image);
-                ResourceLocation textureLocation = Minecraft.getMinecraft().renderEngine.getDynamicTextureLocation("csi_" + id, texture);
-                textures.put(id, texture);
-                texturesLocations.put(id, textureLocation);
-            }
+            BufferedImage image = ImageIO.read(is);
+            DynamicTexture texture = new DynamicTexture(image);
+            loadTexture(id, texture);
         }
         catch (IOException e)
         {
@@ -50,10 +49,18 @@ public class TextureRegistry
         }
     }
 
-    public synchronized static void clear()
+    public static synchronized void loadTexture(String id, DynamicTexture texture)
     {
-        for (DynamicTexture texture : textures.values())
-            texture.deleteGlTexture();
+        ResourceLocation textureLocation = Minecraft.getMinecraft().renderEngine.getDynamicTextureLocation("csi_" + id, texture);
+        DynamicTexture oldTexture = textures.put(id, texture);
+        if (oldTexture != null)
+            releaseList.add(oldTexture);
+        texturesLocations.put(id, textureLocation);
+    }
+
+    public static synchronized void clear()
+    {
+        releaseList.addAll(textures.values());
         textures.clear();
         texturesLocations.clear();
     }
@@ -78,6 +85,13 @@ public class TextureRegistry
         }
         else
             return texture;
+    }
+
+    public static synchronized void tick()
+    {
+        for (DynamicTexture texture : releaseList)
+            texture.deleteGlTexture();
+        releaseList.clear();
     }
 
 }

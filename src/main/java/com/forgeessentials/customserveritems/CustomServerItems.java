@@ -13,6 +13,7 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -89,17 +90,24 @@ public class CustomServerItems implements IMessageHandler<PacketRequestTexture, 
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
-    public void clientDisconnectEvent(ClientDisconnectionFromServerEvent event)
+    public void clientConnectedEvent(ClientConnectedToServerEvent event)
     {
-        TextureRegistry.clear();
-        TextureRegistry.enabled = false;
+        TextureRegistry.enabled = true;
     }
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
-    public void clientConnectedEvent(ClientConnectedToServerEvent event)
+    public void clientDisconnectEvent(ClientDisconnectionFromServerEvent event)
     {
-        TextureRegistry.enabled = true;
+        TextureRegistry.enabled = false;
+        TextureRegistry.clear();
+    }
+
+    @SubscribeEvent
+    @SideOnly(Side.CLIENT)
+    public void clientTickEvent(ClientTickEvent event)
+    {
+        TextureRegistry.tick();
     }
 
     @Override
