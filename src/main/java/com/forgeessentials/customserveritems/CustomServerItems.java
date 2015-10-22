@@ -45,6 +45,8 @@ public class CustomServerItems implements IMessageHandler<PacketRequestTexture, 
 
     public static final ItemCustom ITEM = new ItemCustom();
 
+    public static final ItemCustom ITEM_TOOL = new ItemCustomTool();
+
     public static final SimpleNetworkWrapper CHANNEL = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
 
     public static final File TEXTURE_DIRECTORY = new File("config/CustomServerItems");
@@ -67,6 +69,7 @@ public class CustomServerItems implements IMessageHandler<PacketRequestTexture, 
     public void init(FMLInitializationEvent event)
     {
         GameRegistry.registerItem(ITEM, "custom_item");
+        GameRegistry.registerItem(ITEM_TOOL, "custom_item_tool");
 
         CHANNEL.registerMessage(this, PacketRequestTexture.class, 0, Side.SERVER);
         CHANNEL.registerMessage(PacketTexture.class, PacketTexture.class, 1, Side.CLIENT);
@@ -77,6 +80,7 @@ public class CustomServerItems implements IMessageHandler<PacketRequestTexture, 
         {
             TEXTURE_REGISTRY = new TextureRegistry();
             MinecraftForgeClient.registerItemRenderer(ITEM, new CustomItemRenderer());
+            MinecraftForgeClient.registerItemRenderer(ITEM_TOOL, new CustomItemRenderer());
         }
 
         FMLCommonHandler.instance().bus().register(this);

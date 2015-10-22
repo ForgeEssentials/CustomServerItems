@@ -33,8 +33,8 @@ public class CustomItemRenderer implements IItemRenderer
         case ENTITY_BOBBING:
             return true;
         case BLOCK_3D:
-        case INVENTORY_BLOCK:
         case EQUIPPED_BLOCK:
+        case INVENTORY_BLOCK:
         default:
             return false;
         }
@@ -76,8 +76,10 @@ public class CustomItemRenderer implements IItemRenderer
             tessellator.addVertexWithUV(16, 0, zLevel, 1, 0);
             tessellator.addVertexWithUV(0, 0, zLevel, 0, 0);
             tessellator.draw();
+            GL11.glDisable(GL11.GL_BLEND);
             break;
         }
         GL11.glPopMatrix();
     }
+
 }

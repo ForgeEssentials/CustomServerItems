@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 public class CommandCustomServerItem extends CommandBase
 {
 
-    public static final String[] subCommands = new String[] { "texture", "name", "tooltip", "damage", "durability", "meta", "texturelist" };
+    public static final String[] subCommands = new String[] { "texture", "name", "tooltip", "tool", "damage", "durability", "meta", "texturelist" };
 
     @Override
     public String getCommandName()
@@ -46,7 +46,7 @@ public class CommandCustomServerItem extends CommandBase
         }
 
         ItemStack stack = player.getCurrentEquippedItem();
-        if (stack == null || stack.getItem() != CustomServerItems.ITEM)
+        if (stack == null || !(stack.getItem() instanceof ItemCustom))
             throw new WrongUsageException("commands.customservercommand.itemNeeded");
 
         String subArg = args.remove().toLowerCase();
@@ -63,6 +63,9 @@ public class CommandCustomServerItem extends CommandBase
             break;
         case "tooltip":
             parseTooltip(player, args, stack);
+            break;
+        case "tool":
+            parseTool(player, args, stack);
             break;
         case "damage":
             parseDamage(player, args, stack);
@@ -126,6 +129,15 @@ public class CommandCustomServerItem extends CommandBase
         NBTTagCompound tag = getOrCreateTag(stack);
         tag.setString(CustomServerItems.TAG_TOOLTIP, name);
         func_152373_a(player, this, "commands.customservercommand.tooltipSet", name);
+    }
+
+    public void parseTool(EntityPlayer player, LinkedList<String> args, ItemStack stack)
+    {
+        if (args.isEmpty())
+            throw new WrongUsageException("commands.notEnoughArguments");
+        boolean isTool = parseBoolean(player, args.remove());
+        stack.func_150996_a(isTool ? CustomServerItems.ITEM_TOOL : CustomServerItems.ITEM);
+        func_152373_a(player, this, "commands.customservercommand.toolSet", isTool ? "tool" : "item");
     }
 
     public void parseDamage(EntityPlayer player, LinkedList<String> args, ItemStack stack)
