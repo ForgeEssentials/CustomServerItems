@@ -43,6 +43,8 @@ public class CustomServerItems implements IMessageHandler<PacketRequestTexture, 
 
     public static final String TAG_TOOLTIP = "csi_tooltip";
 
+    public static final String TAG_GLINT = "csi_glint";
+
     public static final ItemCustom ITEM = new ItemCustom();
 
     public static final ItemCustom ITEM_TOOL = new ItemCustomTool();

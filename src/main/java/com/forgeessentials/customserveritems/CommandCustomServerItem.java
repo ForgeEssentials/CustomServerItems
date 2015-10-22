@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 public class CommandCustomServerItem extends CommandBase
 {
 
-    public static final String[] subCommands = new String[] { "texture", "name", "tooltip", "tool", "damage", "durability", "meta", "texturelist" };
+    public static final String[] subCommands = new String[] { "texture", "name", "tooltip", "tool", "glint", "damage", "durability", "meta", "texturelist" };
 
     @Override
     public String getCommandName()
@@ -67,6 +67,9 @@ public class CommandCustomServerItem extends CommandBase
         case "tool":
             parseTool(player, args, stack);
             break;
+        case "glint":
+            parseGlint(player, args, stack);
+            break;
         case "damage":
             parseDamage(player, args, stack);
             break;
@@ -93,6 +96,9 @@ public class CommandCustomServerItem extends CommandBase
             {
             case "texture":
                 return getListOfStringsFromIterableMatchingLastWord(args, CustomServerItems.getTextureNames());
+            case "glint":
+            case "tool":
+                return getListOfStringsMatchingLastWord(args, "true", "false");
             }
         }
         return null;
@@ -137,7 +143,17 @@ public class CommandCustomServerItem extends CommandBase
             throw new WrongUsageException("commands.notEnoughArguments");
         boolean isTool = parseBoolean(player, args.remove());
         stack.func_150996_a(isTool ? CustomServerItems.ITEM_TOOL : CustomServerItems.ITEM);
-        func_152373_a(player, this, "commands.customservercommand.toolSet", isTool ? "tool" : "item");
+        func_152373_a(player, this, isTool ? "commands.customservercommand.toolMode" : "commands.customservercommand.itemMode");
+    }
+
+    public void parseGlint(EntityPlayer player, LinkedList<String> args, ItemStack stack)
+    {
+        if (args.isEmpty())
+            throw new WrongUsageException("commands.notEnoughArguments");
+        boolean glint = parseBoolean(player, args.remove());
+        NBTTagCompound tag = getOrCreateTag(stack);
+        tag.setBoolean(CustomServerItems.TAG_GLINT, glint);
+        func_152373_a(player, this, glint ? "commands.customservercommand.glintOn" : "commands.customservercommand.glintOff");
     }
 
     public void parseDamage(EntityPlayer player, LinkedList<String> args, ItemStack stack)
